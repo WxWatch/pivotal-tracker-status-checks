@@ -56,7 +56,7 @@ export const start = () => {
             if (resource.kind === 'story') {
                 const storyId = resource.id;
                 updateStory(storyId);
-                console.info(`Processed webhook for story \(storyId)`);
+                console.info(`Processed webhook for story ${storyId}`);
             }
         }
 
