@@ -12,14 +12,24 @@ interface StoryResult {
     description: string
 }
 
-const getStatusResult = (state: pivotalClient.StoryState): StoryResult => {
+type AdditionalStoryState = 'chore';
+
+const getStatusResult = (state: pivotalClient.StoryState | AdditionalStoryState): StoryResult => {
     switch (state) {
         case 'accepted':
-            return { state: 'success', description: 'Accepted' };
+            return { state: 'success', description: 'Story is ACCEPTED' };
         case 'rejected':
-            return { state: 'failure', description: 'Rejected' };
+            return { state: 'failure', description: 'Story is REJECTED' };
+        case 'started':
+            return { state: 'pending', description: 'Story is STARTED' };
+        case 'delivered':
+            return { state: 'pending', description: 'Story is DELIVERED' };
+        case 'finished':
+            return { state: 'pending', description: 'Story is FINISHED' };
+        case 'chore':
+            return { state: 'success', description: 'Story is a CHORE'};
         default:
-            return { state: 'pending', description: 'Awaiting Accept/Reject' };
+            return { state: 'pending', description: 'Story awaiting update' };
     }
 }
 
@@ -27,10 +37,16 @@ const updateStory = async (storyId: number) => {
     const story = await pivotalClient.get(storyId);
     for (const request of story.pull_requests) {
         const pullRequest = await githubClient.getPullRequest(request.owner, request.repo, request.number)
-        if (pullRequest.state === 'open') {
-            const statusResult = getStatusResult(story.current_state);
-            await githubClient.putStatusCheck(request.owner, request.repo, pullRequest.head.sha, statusResult.state, story.url, statusResult.description);
+        let statusResult = null;
+        if (pullRequest.state === 'open' && story.story_type !== 'chore') {
+            statusResult = getStatusResult(story.current_state);
+        } else if (pullRequest.state === 'open' && story.story_type === 'chore') {
+            statusResult = getStatusResult('chore');
+        } else {
+            return;
         }
+
+        await githubClient.putStatusCheck(request.owner, request.repo, pullRequest.head.sha, statusResult.state, story.url, statusResult.description);
     }
 }
 
