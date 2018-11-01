@@ -22,6 +22,6 @@ const requester = axios.create({
 export type StoryState = 'accepted' | 'delivered' | 'finished' | 'started' | 'rejected' | 'planned' | 'unstarted' | 'unscheduled';
 
 export const get = async (storyId: number) => {
-    const response = await requester.get(`/projects/${projectId}/stories/${storyId}?fields=pull_requests,current_state,url`);
+    const response = await requester.get(`/projects/${projectId}/stories/${storyId}?fields=pull_requests,current_state,url,story_type`);
     return response.data;
 }
