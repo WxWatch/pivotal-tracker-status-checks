@@ -5,7 +5,11 @@ Pivotal Tracker Status Checks is a [Github App](https://developer.github.com/app
 
 ## Environment Variables
 `PTSU_APP_ID` - Github App App ID
+
 `PTSU_PRIVATE_KEY` - Github App Private Key String
+
 `PTSU_INSTALL_LOGIN` - Github App Installation Login
+
 `PTSU_PIVOTAL_PROJECT_ID` - Pivotal Tracker Project ID
+
 `PTSU_PIVOTAL_TOKEN` - Pivotal Tracker API Token
